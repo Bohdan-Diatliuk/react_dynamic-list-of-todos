@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
@@ -7,28 +7,87 @@ import { TodoList } from './components/TodoList';
 import { TodoFilter } from './components/TodoFilter';
 import { TodoModal } from './components/TodoModal';
 import { Loader } from './components/Loader';
+import { getTodos } from './api';
+import { Todo } from './types/Todo';
+import { FilterStatus } from './types/FilterStatus';
+
+const FILTRATIONS: Record<FilterStatus, (todo: Todo) => boolean> = {
+  [FilterStatus.All]: () => true,
+  [FilterStatus.Active]: (todo: Todo) => !todo.completed,
+  [FilterStatus.Completed]: (todo: Todo) => todo.completed,
+};
 
 export const App: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
+  const [isModalOpened, setIsModalOpened] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState<FilterStatus>(
+    FilterStatus.All,
+  );
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      setIsLoading(true);
+      try {
+        setTodos(await getTodos());
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTodos();
+  }, []);
+
+  const filteredTodos = useMemo(() => {
+    const normalized = searchQuery.toLowerCase().trim();
+
+    return todos
+      .filter(FILTRATIONS[selectedFilter])
+      .filter(todo => todo.title.toLowerCase().includes(normalized));
+  }, [todos, searchQuery, selectedFilter]);
+
   return (
     <>
-      <div className="section">
-        <div className="container">
-          <div className="box">
-            <h1 className="title">Todos:</h1>
+      <section className="section">
+        <div className="container box">
+          <h1 className="title">Todos:</h1>
 
-            <div className="block">
-              <TodoFilter />
-            </div>
+          <TodoFilter
+            query={searchQuery}
+            onQueryChange={e => setSearchQuery(e.target.value)}
+            onQueryReset={() => setSearchQuery('')}
+            selectedFilter={selectedFilter}
+            onSelectFilter={e =>
+              setSelectedFilter(e.target.value as FilterStatus)
+            }
+          />
 
-            <div className="block">
-              <Loader />
-              <TodoList />
-            </div>
-          </div>
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <TodoList
+              todos={filteredTodos}
+              selectedTodo={selectedTodo}
+              onSelectTodo={todo => {
+                setSelectedTodo(todo);
+                setIsModalOpened(true);
+              }}
+            />
+          )}
         </div>
-      </div>
+      </section>
 
-      <TodoModal />
+      {isModalOpened && selectedTodo && (
+        <TodoModal
+          onClose={() => {
+            setIsModalOpened(false);
+            setSelectedTodo(null);
+          }}
+          selectedTodo={selectedTodo}
+        />
+      )}
     </>
   );
 };
