@@ -1,7 +1,7 @@
 import React from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
 interface TodoFilterProps {
-  query: string;
+  searchQuery: string;
   handleQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleQueryReset: () => void;
   selectedFilter: FilterStatus;
@@ -9,7 +9,7 @@ interface TodoFilterProps {
 }
 
 export const TodoFilter: React.FC<TodoFilterProps> = ({
-  query,
+  searchQuery,
   handleQueryChange: onQueryChange,
   handleQueryReset: onQueryReset,
   selectedFilter,
@@ -33,7 +33,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
     <p className="control is-expanded has-icons-left has-icons-right">
       <input
         data-cy="searchInput"
-        value={query}
+        value={searchQuery}
         onChange={onQueryChange}
         type="text"
         className="input"
@@ -43,7 +43,7 @@ export const TodoFilter: React.FC<TodoFilterProps> = ({
         <i className="fas fa-magnifying-glass" />
       </span>
 
-      {query.length > 0 && (
+      {searchQuery.length > 0 && (
         <span className="icon is-right" style={{ pointerEvents: 'all' }}>
           {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
           <button

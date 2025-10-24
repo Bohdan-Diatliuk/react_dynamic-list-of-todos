@@ -24,10 +24,17 @@ export const TodoModal: React.FC<TodoModalProps> = ({
       try {
         setIsUserLoading(true);
         setError(null);
-        const fetchedUser = await getUser(selectedTodo.userId);
+
+        const fetchedUser = await getUser(selectedTodo.userId, {
+          signal: controller.signal,
+        });
 
         setCurrentUser(fetchedUser);
-      } catch {
+      } catch (err: unknown) {
+        if ((err as { name?: string }).name === 'AbortError') {
+          return;
+        }
+
         setError('Failed to load user info.');
       } finally {
         setIsUserLoading(false);

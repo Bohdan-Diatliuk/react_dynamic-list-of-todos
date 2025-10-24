@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import React, { useEffect, useMemo, useState } from 'react';
 import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
@@ -31,7 +30,9 @@ export const App: React.FC = () => {
     const fetchTodos = async () => {
       setIsLoading(true);
       try {
-        setTodos(await getTodos());
+        const data = await getTodos();
+
+        setTodos(data);
       } finally {
         setIsLoading(false);
       }
@@ -48,6 +49,28 @@ export const App: React.FC = () => {
       .filter(todo => todo.title.toLowerCase().includes(normalized));
   }, [todos, searchQuery, selectedFilter]);
 
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleQueryReset = () => {
+    setSearchQuery('');
+  };
+
+  const handleSelectFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedFilter(e.target.value as FilterStatus);
+  };
+
+  const handleSelectTodo = (todo: Todo) => {
+    setSelectedTodo(todo);
+    setIsModalOpened(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpened(false);
+    setSelectedTodo(null);
+  };
+
   return (
     <>
       <section className="section">
@@ -55,13 +78,11 @@ export const App: React.FC = () => {
           <h1 className="title">Todos:</h1>
 
           <TodoFilter
-            query={searchQuery}
-            handleQueryChange={e => setSearchQuery(e.target.value)}
-            handleQueryReset={() => setSearchQuery('')}
+            searchQuery={searchQuery}
+            handleQueryChange={handleQueryChange}
+            handleQueryReset={handleQueryReset}
             selectedFilter={selectedFilter}
-            handleSelectFilter={e =>
-              setSelectedFilter(e.target.value as FilterStatus)
-            }
+            handleSelectFilter={handleSelectFilter}
           />
 
           {isLoading ? (
@@ -70,10 +91,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               selectedTodo={selectedTodo}
-              handleSelectTodo={todo => {
-                setSelectedTodo(todo);
-                setIsModalOpened(true);
-              }}
+              handleSelectTodo={handleSelectTodo}
             />
           )}
         </div>
@@ -81,10 +99,7 @@ export const App: React.FC = () => {
 
       {isModalOpened && selectedTodo && (
         <TodoModal
-          handleModalClose={() => {
-            setIsModalOpened(false);
-            setSelectedTodo(null);
-          }}
+          handleModalClose={handleModalClose}
           selectedTodo={selectedTodo}
         />
       )}
