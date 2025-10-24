@@ -56,10 +56,10 @@ export const App: React.FC = () => {
 
           <TodoFilter
             query={searchQuery}
-            onQueryChange={e => setSearchQuery(e.target.value)}
-            onQueryReset={() => setSearchQuery('')}
+            handleQueryChange={e => setSearchQuery(e.target.value)}
+            handleQueryReset={() => setSearchQuery('')}
             selectedFilter={selectedFilter}
-            onSelectFilter={e =>
+            handleSelectFilter={e =>
               setSelectedFilter(e.target.value as FilterStatus)
             }
           />
@@ -70,7 +70,7 @@ export const App: React.FC = () => {
             <TodoList
               todos={filteredTodos}
               selectedTodo={selectedTodo}
-              onSelectTodo={todo => {
+              handleSelectTodo={todo => {
                 setSelectedTodo(todo);
                 setIsModalOpened(true);
               }}
@@ -81,7 +81,7 @@ export const App: React.FC = () => {
 
       {isModalOpened && selectedTodo && (
         <TodoModal
-          onClose={() => {
+          handleModalClose={() => {
             setIsModalOpened(false);
             setSelectedTodo(null);
           }}

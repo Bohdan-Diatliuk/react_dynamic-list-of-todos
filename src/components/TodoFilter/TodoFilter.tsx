@@ -2,18 +2,18 @@ import React from 'react';
 import { FilterStatus } from '../../types/FilterStatus';
 interface TodoFilterProps {
   query: string;
-  onQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onQueryReset: () => void;
+  handleQueryChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleQueryReset: () => void;
   selectedFilter: FilterStatus;
-  onSelectFilter: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleSelectFilter: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 export const TodoFilter: React.FC<TodoFilterProps> = ({
   query,
-  onQueryChange,
-  onQueryReset,
+  handleQueryChange: onQueryChange,
+  handleQueryReset: onQueryReset,
   selectedFilter,
-  onSelectFilter,
+  handleSelectFilter: onSelectFilter,
 }) => (
   <form className="field has-addons">
     <p className="control">

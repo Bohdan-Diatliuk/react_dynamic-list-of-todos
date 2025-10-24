@@ -6,18 +6,20 @@ import { getUser } from '../../api';
 
 interface TodoModalProps {
   selectedTodo: Todo;
-  onClose: () => void;
+  handleModalClose: () => void;
 }
 
 export const TodoModal: React.FC<TodoModalProps> = ({
   selectedTodo,
-  onClose,
+  handleModalClose: onClose,
 }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchUser = async () => {
       try {
         setIsUserLoading(true);
@@ -33,6 +35,10 @@ export const TodoModal: React.FC<TodoModalProps> = ({
     };
 
     fetchUser();
+
+    return () => {
+      controller.abort();
+    };
   }, [selectedTodo]);
 
   return (

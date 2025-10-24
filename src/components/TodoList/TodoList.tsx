@@ -5,11 +5,11 @@ import { Todo } from '../../types/Todo';
 interface TodoListProps {
   todos: Todo[];
   selectedTodo: Todo | null;
-  onSelectTodo: (todo: Todo) => void;
+  handleSelectTodo: (todo: Todo) => void;
 }
 
 export const TodoList: React.FC<TodoListProps> = memo(
-  ({ todos, selectedTodo, onSelectTodo }: TodoListProps) => (
+  ({ todos, selectedTodo, handleSelectTodo: onSelectTodo }: TodoListProps) => (
     <table className="table is-narrow is-fullwidth">
       <thead>
         <tr>
